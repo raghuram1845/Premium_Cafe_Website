@@ -3,27 +3,33 @@ package com.internproject.premium_cafe_backend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name="categories")
+@Table(name = "contacts")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Category {
+public class Contact {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false,unique = true)
     private String name;
 
-    @Column(length = 500)
-    private String description;
+    private String email;
 
-    @OneToMany(mappedBy = "category")
-    private List<MenuItem> menuItems;
+    private String phone;
+
+    private String subject;
+
+    @Column(length = 1000)
+    private String message;
+
+    private String status;
+
+    private LocalDateTime createdAt;
 }
