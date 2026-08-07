@@ -1,4 +1,19 @@
 package com.internproject.premium_cafe_backend.service;
 
+import com.internproject.premium_cafe_backend.dto.request.UserRequestDto;
+import com.internproject.premium_cafe_backend.dto.response.UserResponseDto;
+
+import java.util.List;
+
 public interface UserService {
+
+    UserResponseDto createUser(UserRequestDto request);
+
+    List<UserResponseDto> getAllUsers();
+
+    UserResponseDto getUserById(Long id);
+
+    UserResponseDto updateUser(Long id, UserRequestDto request);
+
+    void deleteUser(Long id);
 }
