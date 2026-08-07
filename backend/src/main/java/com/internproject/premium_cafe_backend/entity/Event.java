@@ -20,21 +20,29 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String title;
+
+    @Column(nullable = false)
+    private LocalDate startDate;
+
+    @Column(nullable = false)
+    private LocalDate endDate;
+
+    @Column(nullable = false, precision = 5, scale = 2)
+    private BigDecimal discount;
 
     @Column(length = 1000)
     private String description;
 
     private String imageUrl;
 
-    private LocalDate startDate;
-
-    private LocalDate endDate;
-
-    private BigDecimal discount;
-
+    @Column(nullable = false)
     private Boolean active;
 
+    @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 }
