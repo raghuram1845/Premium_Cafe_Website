@@ -33,6 +33,9 @@ public class CafeTable {
     @OneToMany(mappedBy = "cafeTable")
     private List<Reservation> reservations;
 
+    @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 }

@@ -34,7 +34,10 @@ public class MenuItem {
     @Column(nullable = false)
     private Boolean availability;
 
+    @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
     @ManyToOne
