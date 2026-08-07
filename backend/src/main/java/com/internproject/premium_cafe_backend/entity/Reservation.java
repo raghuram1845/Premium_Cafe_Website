@@ -21,18 +21,25 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private LocalDate reservationDate;
 
+    @Column(nullable = false)
     private LocalTime reservationTime;
 
+    @Column(nullable = false)
     private Integer guests;
 
     private String specialRequest;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ReservationStatus status;
 
+    @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
     @ManyToOne
