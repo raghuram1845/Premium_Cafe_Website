@@ -3,6 +3,7 @@ package com.internproject.premium_cafe_backend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -26,4 +27,10 @@ public class Category {
 
     @OneToMany(mappedBy = "category")
     private List<MenuItem> menuItems;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
 }

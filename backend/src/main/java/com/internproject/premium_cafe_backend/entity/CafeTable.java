@@ -4,6 +4,7 @@ import com.internproject.premium_cafe_backend.enums.TableStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -31,4 +32,7 @@ public class CafeTable {
 
     @OneToMany(mappedBy = "cafeTable")
     private List<Reservation> reservations;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

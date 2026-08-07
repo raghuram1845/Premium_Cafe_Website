@@ -35,7 +35,6 @@ public class MenuItem {
     private Boolean availability;
 
     private LocalDateTime createdAt;
-
     private LocalDateTime updatedAt;
 
     @ManyToOne

@@ -33,6 +33,7 @@ public class Reservation {
     private ReservationStatus status;
 
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

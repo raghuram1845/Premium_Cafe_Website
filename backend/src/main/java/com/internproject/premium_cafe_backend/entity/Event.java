@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "events")
@@ -33,4 +34,7 @@ public class Event {
     private BigDecimal discount;
 
     private Boolean active;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }
