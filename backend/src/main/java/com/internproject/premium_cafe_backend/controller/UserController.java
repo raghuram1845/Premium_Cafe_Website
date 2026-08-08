@@ -1,6 +1,8 @@
 package com.internproject.premium_cafe_backend.controller;
 
+import com.internproject.premium_cafe_backend.dto.request.LoginRequestDto;
 import com.internproject.premium_cafe_backend.dto.request.UserRequestDto;
+import com.internproject.premium_cafe_backend.dto.response.LoginResponseDto;
 import com.internproject.premium_cafe_backend.dto.response.UserResponseDto;
 import com.internproject.premium_cafe_backend.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +53,15 @@ public class UserController {
         userService.deleteUser(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDto> login(
+            @RequestBody LoginRequestDto request) {
+
+        return ResponseEntity.ok(
+                userService.login(request)
+        );
     }
 
 }
