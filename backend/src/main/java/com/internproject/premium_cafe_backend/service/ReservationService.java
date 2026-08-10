@@ -17,4 +17,6 @@ public interface ReservationService {
                                              ReservationRequestDto request);
 
     void deleteReservation(Long id);
+
+    ReservationResponseDto approveReservation(Long id);
 }

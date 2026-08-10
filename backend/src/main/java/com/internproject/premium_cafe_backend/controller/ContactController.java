@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
+import com.internproject.premium_cafe_backend.dto.request.ContactStatusUpdateDto;
+import com.internproject.premium_cafe_backend.enums.ContactStatus;
 
 import java.util.List;
 
@@ -19,7 +22,7 @@ public class ContactController {
 
     @PostMapping
     public ResponseEntity<ContactResponseDto> createContact(
-            @RequestBody ContactRequestDto request) {
+            @Valid @RequestBody ContactRequestDto request) {
 
         return new ResponseEntity<>(
                 contactService.createContact(request),
@@ -44,10 +47,23 @@ public class ContactController {
     @PutMapping("/{id}")
     public ResponseEntity<ContactResponseDto> updateContact(
             @PathVariable Long id,
-            @RequestBody ContactRequestDto request) {
+            @Valid @RequestBody ContactRequestDto request) {
 
         return ResponseEntity.ok(
                 contactService.updateContact(id, request));
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<ContactResponseDto> updateContactStatus(
+            @PathVariable Long id,
+            @Valid @RequestBody ContactStatusUpdateDto request) {
+
+        return ResponseEntity.ok(
+                contactService.updateContactStatus(
+                        id,
+                        request.getStatus()
+                )
+        );
     }
 
     @DeleteMapping("/{id}")

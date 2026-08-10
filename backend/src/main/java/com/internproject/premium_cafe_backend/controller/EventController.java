@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class EventController {
 
     @PostMapping
     public ResponseEntity<EventResponseDto> createEvent(
-            @RequestBody EventRequestDto request) {
+            @Valid @RequestBody EventRequestDto request) {
 
         return new ResponseEntity<>(
                 eventService.createEvent(request),
@@ -42,7 +43,7 @@ public class EventController {
     @PutMapping("/{id}")
     public ResponseEntity<EventResponseDto> updateEvent(
             @PathVariable Long id,
-            @RequestBody EventRequestDto request) {
+            @Valid @RequestBody EventRequestDto request) {
 
         return ResponseEntity.ok(
                 eventService.updateEvent(id, request));

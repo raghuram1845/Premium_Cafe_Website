@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class MenuItemController {
 
     @PostMapping
     public ResponseEntity<MenuItemResponseDto> createMenuItem(
-            @RequestBody MenuItemRequestDto request) {
+            @Valid @RequestBody MenuItemRequestDto request) {
 
         return new ResponseEntity<>(
                 menuItemService.createMenuItem(request),
@@ -42,7 +43,7 @@ public class MenuItemController {
     @PutMapping("/{id}")
     public ResponseEntity<MenuItemResponseDto> updateMenuItem(
             @PathVariable Long id,
-            @RequestBody MenuItemRequestDto request) {
+            @Valid @RequestBody MenuItemRequestDto request) {
 
         return ResponseEntity.ok(
                 menuItemService.updateMenuItem(id, request));

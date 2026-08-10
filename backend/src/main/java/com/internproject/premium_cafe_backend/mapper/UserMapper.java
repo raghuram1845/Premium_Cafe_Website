@@ -3,6 +3,7 @@ package com.internproject.premium_cafe_backend.mapper;
 import com.internproject.premium_cafe_backend.dto.request.UserRequestDto;
 import com.internproject.premium_cafe_backend.dto.response.UserResponseDto;
 import com.internproject.premium_cafe_backend.entity.User;
+import com.internproject.premium_cafe_backend.enums.Role;
 
 import java.time.LocalDateTime;
 
@@ -17,7 +18,7 @@ public class UserMapper {
                 .email(dto.getEmail())
                 .phone(dto.getPhone())
                 .password(dto.getPassword())
-                .role(dto.getRole())
+                .role(Role.CUSTOMER)
                 .createdAt(now)
                 .updatedAt(now)
                 .build();

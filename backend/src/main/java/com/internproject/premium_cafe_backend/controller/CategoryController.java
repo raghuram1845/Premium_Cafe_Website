@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class CategoryController {
 
     @PostMapping
     public ResponseEntity<CategoryResponseDto> createCategory(
-            @RequestBody CategoryRequestDto request) {
+            @Valid @RequestBody CategoryRequestDto request) {
 
         return new ResponseEntity<>(
                 categoryService.createCategory(request),
@@ -42,7 +43,7 @@ public class CategoryController {
     @PutMapping("/{id}")
     public ResponseEntity<CategoryResponseDto> updateCategory(
             @PathVariable Long id,
-            @RequestBody CategoryRequestDto request) {
+            @Valid @RequestBody CategoryRequestDto request) {
 
         return ResponseEntity.ok(
                 categoryService.updateCategory(id, request));

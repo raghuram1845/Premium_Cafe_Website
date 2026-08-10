@@ -1,6 +1,7 @@
 package com.internproject.premium_cafe_backend.service.serviceimpl;
 
 import com.internproject.premium_cafe_backend.dto.request.LoginRequestDto;
+import com.internproject.premium_cafe_backend.dto.request.ProfileUpdateRequestDto;
 import com.internproject.premium_cafe_backend.dto.request.UserRequestDto;
 import com.internproject.premium_cafe_backend.dto.response.LoginResponseDto;
 import com.internproject.premium_cafe_backend.dto.response.UserResponseDto;
@@ -14,9 +15,13 @@ import com.internproject.premium_cafe_backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.internproject.premium_cafe_backend.exception.DuplicateResourceException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,9 +34,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto createUser(UserRequestDto request) {
 
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new DuplicateResourceException(
+                    "Email already exists.");
+        }
+
+        if (userRepository.existsByPhone(request.getPhone())) {
+            throw new DuplicateResourceException(
+                    "Phone number already exists.");
+        }
+
         User user = UserMapper.toEntity(request);
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(
+                passwordEncoder.encode(user.getPassword())
+        );
 
         User savedUser = userRepository.save(user);
 
@@ -62,13 +79,35 @@ public class UserServiceImpl implements UserService {
 
         User user = userRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("User not found with id : " + id));
+                        new ResourceNotFoundException(
+                                "User not found with id : " + id));
+
+        Optional<User> existingEmailUser =
+                userRepository.findByEmail(request.getEmail());
+
+        if (existingEmailUser.isPresent()
+                && !existingEmailUser.get().getId().equals(id)) {
+
+            throw new DuplicateResourceException(
+                    "Email already exists.");
+        }
+
+        Optional<User> existingPhoneUser =
+                userRepository.findByPhone(request.getPhone());
+
+        if (existingPhoneUser.isPresent()
+                && !existingPhoneUser.get().getId().equals(id)) {
+
+            throw new DuplicateResourceException(
+                    "Phone number already exists.");
+        }
 
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());
-        user.setPassword(request.getPassword());
-        user.setRole(request.getRole());
+        user.setPassword(
+                passwordEncoder.encode(request.getPassword())
+        );
         user.setUpdatedAt(LocalDateTime.now());
 
         User updatedUser = userRepository.save(user);
@@ -115,5 +154,82 @@ public class UserServiceImpl implements UserService {
                 .token(token)
                 .message("Login successful.")
                 .build();
+    }
+
+    @Override
+    public UserResponseDto getProfile(Long id) {
+
+        Authentication authentication =
+                SecurityContextHolder.getContext()
+                        .getAuthentication();
+
+        Long authenticatedUserId =
+                (Long) authentication.getPrincipal();
+
+        if (!authenticatedUserId.equals(id)) {
+            throw new InvalidRequestException(
+                    "You can only access your own profile."
+            );
+        }
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "User not found with id : " + id));
+
+        return UserMapper.toResponse(user);
+    }
+
+    @Override
+    public UserResponseDto updateProfile(
+            Long id,
+            ProfileUpdateRequestDto request) {
+
+        Authentication authentication =
+                SecurityContextHolder.getContext()
+                        .getAuthentication();
+
+        Long authenticatedUserId =
+                (Long) authentication.getPrincipal();
+
+        if (!authenticatedUserId.equals(id)) {
+            throw new InvalidRequestException(
+                    "You can only update your own profile."
+            );
+        }
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "User not found with id : " + id));
+
+        Optional<User> existingEmailUser =
+                userRepository.findByEmail(request.getEmail());
+
+        if (existingEmailUser.isPresent()
+                && !existingEmailUser.get().getId().equals(id)) {
+
+            throw new DuplicateResourceException(
+                    "Email already exists.");
+        }
+
+        Optional<User> existingPhoneUser =
+                userRepository.findByPhone(request.getPhone());
+
+        if (existingPhoneUser.isPresent()
+                && !existingPhoneUser.get().getId().equals(id)) {
+
+            throw new DuplicateResourceException(
+                    "Phone number already exists.");
+        }
+
+        user.setFullName(request.getFullName());
+        user.setEmail(request.getEmail());
+        user.setPhone(request.getPhone());
+        user.setUpdatedAt(LocalDateTime.now());
+
+        User updatedUser = userRepository.save(user);
+
+        return UserMapper.toResponse(updatedUser);
     }
 }

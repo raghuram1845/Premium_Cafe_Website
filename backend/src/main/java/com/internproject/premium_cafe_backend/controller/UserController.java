@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
+import com.internproject.premium_cafe_backend.dto.request.ProfileUpdateRequestDto;
 
 import java.util.List;
 
@@ -21,7 +23,7 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserResponseDto> createUser(
-            @RequestBody UserRequestDto request) {
+            @Valid @RequestBody UserRequestDto request) {
 
         UserResponseDto response = userService.createUser(request);
 
@@ -43,10 +45,30 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDto> updateUser(
             @PathVariable Long id,
-            @RequestBody UserRequestDto request) {
+            @Valid @RequestBody UserRequestDto request) {
 
         return ResponseEntity.ok(userService.updateUser(id, request));
     }
+
+    @PutMapping("/{id}/profile")
+    public ResponseEntity<UserResponseDto> updateProfile(
+            @PathVariable Long id,
+            @Valid @RequestBody ProfileUpdateRequestDto request) {
+
+        return ResponseEntity.ok(
+                userService.updateProfile(id, request)
+        );
+    }
+
+    @GetMapping("/{id}/profile")
+    public ResponseEntity<UserResponseDto> getProfile(
+            @PathVariable Long id) {
+
+        return ResponseEntity.ok(
+                userService.getProfile(id)
+        );
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
 
@@ -57,7 +79,7 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(
-            @RequestBody LoginRequestDto request) {
+            @Valid @RequestBody LoginRequestDto request) {
 
         return ResponseEntity.ok(
                 userService.login(request)

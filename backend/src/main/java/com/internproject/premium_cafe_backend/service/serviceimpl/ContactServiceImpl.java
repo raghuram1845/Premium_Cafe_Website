@@ -10,6 +10,7 @@ import com.internproject.premium_cafe_backend.repository.ContactRepository;
 import com.internproject.premium_cafe_backend.service.ContactService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import com.internproject.premium_cafe_backend.enums.ContactStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -110,6 +111,24 @@ public class ContactServiceImpl implements ContactService {
         contact.setPhone(request.getPhone());
         contact.setSubject(request.getSubject());
         contact.setMessage(request.getMessage());
+        contact.setUpdatedAt(LocalDateTime.now());
+
+        Contact updatedContact = contactRepository.save(contact);
+
+        return ContactMapper.toResponse(updatedContact);
+    }
+
+    @Override
+    public ContactResponseDto updateContactStatus(
+            Long id,
+            ContactStatus status) {
+
+        Contact contact = contactRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Contact not found with id : " + id));
+
+        contact.setStatus(status);
         contact.setUpdatedAt(LocalDateTime.now());
 
         Contact updatedContact = contactRepository.save(contact);

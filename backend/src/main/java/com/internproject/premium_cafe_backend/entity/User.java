@@ -30,6 +30,9 @@ public class User {
     @Column(nullable = false, unique = true)
     private String phone;
 
+    @OneToMany(mappedBy = "user")
+    private List<Reservation> reservations;
+
     @Column(nullable = false)
     private String password;
 
@@ -43,6 +46,4 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "user")
-    private List<Reservation> reservations;
 }

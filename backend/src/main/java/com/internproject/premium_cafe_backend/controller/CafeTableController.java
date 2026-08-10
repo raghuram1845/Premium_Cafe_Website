@@ -7,7 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -19,7 +22,7 @@ public class CafeTableController {
 
     @PostMapping
     public ResponseEntity<CafeTableResponseDto> createCafeTable(
-            @RequestBody CafeTableRequestDto request) {
+            @Valid @RequestBody CafeTableRequestDto request) {
 
         return new ResponseEntity<>(
                 cafeTableService.createCafeTable(request),
@@ -32,6 +35,21 @@ public class CafeTableController {
         return ResponseEntity.ok(cafeTableService.getAllCafeTables());
     }
 
+    @GetMapping("/available")
+    public ResponseEntity<List<CafeTableResponseDto>> getAvailableTables(
+            @RequestParam LocalDate date,
+            @RequestParam LocalTime time,
+            @RequestParam Integer guests) {
+
+        return ResponseEntity.ok(
+                cafeTableService.getAvailableTables(
+                        date,
+                        time,
+                        guests
+                )
+        );
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<CafeTableResponseDto> getCafeTableById(
             @PathVariable Long id) {
@@ -42,7 +60,7 @@ public class CafeTableController {
     @PutMapping("/{id}")
     public ResponseEntity<CafeTableResponseDto> updateCafeTable(
             @PathVariable Long id,
-            @RequestBody CafeTableRequestDto request) {
+            @Valid @RequestBody CafeTableRequestDto request) {
 
         return ResponseEntity.ok(
                 cafeTableService.updateCafeTable(id, request));

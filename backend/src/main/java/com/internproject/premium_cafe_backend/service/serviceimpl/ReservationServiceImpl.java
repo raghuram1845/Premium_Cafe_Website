@@ -16,7 +16,10 @@ import com.internproject.premium_cafe_backend.repository.ReservationRepository;
 import com.internproject.premium_cafe_backend.repository.UserRepository;
 import com.internproject.premium_cafe_backend.service.ReservationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,10 +37,16 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public ReservationResponseDto createReservation(ReservationRequestDto request) {
 
-        User user = userRepository.findById(request.getUserId())
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        Long authenticatedUserId =
+                (Long) authentication.getPrincipal();
+
+        User user = userRepository.findById(authenticatedUserId)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("User not found with id : "
-                                + request.getUserId()));
+                        new ResourceNotFoundException(
+                                "User not found with id : " + authenticatedUserId));
 
         CafeTable cafeTable = cafeTableRepository.findById(request.getCafeTableId())
                 .orElseThrow(() ->
@@ -101,8 +110,28 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public List<ReservationResponseDto> getAllReservations() {
 
-        return reservationRepository.findAll()
-                .stream()
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        Long userId = (Long) authentication.getPrincipal();
+
+        String role = authentication.getAuthorities()
+                .iterator()
+                .next()
+                .getAuthority();
+
+        List<Reservation> reservations;
+
+        if ("ROLE_ADMIN".equals(role)) {
+
+            reservations = reservationRepository.findAll();
+
+        } else {
+
+            reservations = reservationRepository.findByUserId(userId);
+        }
+
+        return reservations.stream()
                 .map(ReservationMapper::toResponse)
                 .toList();
     }
@@ -114,6 +143,28 @@ public class ReservationServiceImpl implements ReservationService {
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "Reservation not found with id : " + id));
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        Long authenticatedUserId =
+                (Long) authentication.getPrincipal();
+
+        String role = authentication.getAuthorities()
+                .iterator()
+                .next()
+                .getAuthority();
+
+        if ("ROLE_ADMIN".equals(role)) {
+
+            return ReservationMapper.toResponse(reservation);
+        }
+
+        if (!reservation.getUser().getId().equals(authenticatedUserId)) {
+
+            throw new AccessDeniedException(
+                    "You are not allowed to access this reservation.");
+        }
 
         return ReservationMapper.toResponse(reservation);
     }
@@ -127,10 +178,24 @@ public class ReservationServiceImpl implements ReservationService {
                         new ResourceNotFoundException(
                                 "Reservation not found with id : " + id));
 
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "User not found with id : " + request.getUserId()));
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        Long authenticatedUserId =
+                (Long) authentication.getPrincipal();
+
+        String role = authentication.getAuthorities()
+                .iterator()
+                .next()
+                .getAuthority();
+
+        if ("ROLE_CUSTOMER".equals(role)
+                && !reservation.getUser().getId().equals(authenticatedUserId)) {
+
+            throw new AccessDeniedException(
+                    "You are not allowed to update this reservation.");
+        }
 
         CafeTable cafeTable = cafeTableRepository.findById(request.getCafeTableId())
                 .orElseThrow(() ->
@@ -191,7 +256,6 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setReservationTime(request.getReservationTime());
         reservation.setGuests(request.getGuests());
         reservation.setSpecialRequest(request.getSpecialRequest());
-        reservation.setUser(user);
         reservation.setCafeTable(cafeTable);
         reservation.setUpdatedAt(LocalDateTime.now());
 
@@ -209,6 +273,64 @@ public class ReservationServiceImpl implements ReservationService {
                         new ResourceNotFoundException(
                                 "Reservation not found with id : " + id));
 
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        Long authenticatedUserId =
+                (Long) authentication.getPrincipal();
+
+        String role = authentication.getAuthorities()
+                .iterator()
+                .next()
+                .getAuthority();
+
+        if ("ROLE_CUSTOMER".equals(role)
+                && !reservation.getUser().getId().equals(authenticatedUserId)) {
+
+            throw new AccessDeniedException(
+                    "You are not allowed to delete this reservation.");
+        }
+
         reservationRepository.delete(reservation);
+    }
+
+    @Override
+    public ReservationResponseDto approveReservation(Long id) {
+
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Reservation not found with id : " + id));
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        String role = authentication.getAuthorities()
+                .iterator()
+                .next()
+                .getAuthority();
+
+        if (!"ROLE_ADMIN".equals(role)) {
+            throw new AccessDeniedException(
+                    "Only administrators can confirm reservations.");
+        }
+
+        if (reservation.getStatus() == ReservationStatus.CANCELLED) {
+            throw new InvalidRequestException(
+                    "Cancelled reservations cannot be confirmed.");
+        }
+
+        if (reservation.getStatus() == ReservationStatus.APPROVED) {
+            throw new InvalidRequestException(
+                    "Reservation is already confirmed.");
+        }
+
+        reservation.setStatus(ReservationStatus.APPROVED);
+        reservation.setUpdatedAt(LocalDateTime.now());
+
+        Reservation updatedReservation =
+                reservationRepository.save(reservation);
+
+        return ReservationMapper.toResponse(updatedReservation);
     }
 }

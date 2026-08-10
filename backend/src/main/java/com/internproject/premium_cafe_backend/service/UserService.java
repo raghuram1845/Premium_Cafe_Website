@@ -1,5 +1,6 @@
 package com.internproject.premium_cafe_backend.service;
 
+import com.internproject.premium_cafe_backend.dto.request.ProfileUpdateRequestDto;
 import com.internproject.premium_cafe_backend.dto.request.UserRequestDto;
 import com.internproject.premium_cafe_backend.dto.response.UserResponseDto;
 import com.internproject.premium_cafe_backend.dto.request.LoginRequestDto;
@@ -20,4 +21,10 @@ public interface UserService {
     void deleteUser(Long id);
 
     LoginResponseDto login(LoginRequestDto request);
+
+    UserResponseDto updateProfile(
+            Long id,
+            ProfileUpdateRequestDto request
+    );
+    UserResponseDto getProfile(Long id);
 }

@@ -14,4 +14,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             LocalDate reservationDate
     );
 
+    List<Reservation> findByUserId(Long userId);
+    boolean existsByCafeTable(CafeTable cafeTable);
+
 }

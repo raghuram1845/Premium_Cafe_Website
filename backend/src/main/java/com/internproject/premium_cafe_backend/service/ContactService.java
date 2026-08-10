@@ -1,4 +1,5 @@
 package com.internproject.premium_cafe_backend.service;
+import com.internproject.premium_cafe_backend.enums.ContactStatus;
 
 import com.internproject.premium_cafe_backend.dto.request.ContactRequestDto;
 import com.internproject.premium_cafe_backend.dto.response.ContactResponseDto;
@@ -13,8 +14,13 @@ public interface ContactService {
 
     ContactResponseDto getContactById(Long id);
 
-    ContactResponseDto updateContact(Long id,
-                                     ContactRequestDto request);
+    ContactResponseDto updateContact(Long id, ContactRequestDto request);
+
+    ContactResponseDto updateContactStatus(
+            Long id,
+            ContactStatus status
+    );
 
     void deleteContact(Long id);
+
 }

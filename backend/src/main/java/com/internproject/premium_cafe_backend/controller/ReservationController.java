@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class ReservationController {
 
     @PostMapping
     public ResponseEntity<ReservationResponseDto> createReservation(
-            @RequestBody ReservationRequestDto request) {
+            @Valid @RequestBody ReservationRequestDto request) {
 
         return new ResponseEntity<>(
                 reservationService.createReservation(request),
@@ -44,7 +45,7 @@ public class ReservationController {
     @PutMapping("/{id}")
     public ResponseEntity<ReservationResponseDto> updateReservation(
             @PathVariable Long id,
-            @RequestBody ReservationRequestDto request) {
+            @Valid @RequestBody ReservationRequestDto request) {
 
         return ResponseEntity.ok(
                 reservationService.updateReservation(id, request));
@@ -57,5 +58,13 @@ public class ReservationController {
         reservationService.deleteReservation(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/approve")
+    public ResponseEntity<ReservationResponseDto> approveReservation(
+            @PathVariable Long id) {
+
+        return ResponseEntity.ok(
+                reservationService.approveReservation(id));
     }
 }
