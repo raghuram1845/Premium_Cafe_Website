@@ -207,6 +207,7 @@ public class SecurityConfig {
 
         configuration.setAllowedOrigins(
                 List.of(
+                        "https://premium-cafe-website-five.vercel.app/",
                         "http://localhost:5173",
                         "https://premium-cafe-website-13h3r4w7s-raghuram1845s-projects.vercel.app"
                 )
